@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ENG">
+<head>
+    <meta charset="UTF-8">
+    <title>Devil May Cry - Employee List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'DevilMayCrySSS';
+            src: url('/fonts/DevilMayCrySSS.woff2') format('woff2');
+        }
+
+        @font-face {
+            font-family: 'DevilMayCryKA';
+            src: url('/fonts/DevilMayCryKA.ttf') format('truetype');
+        }
+
+
+        body {
+            background-color: #111;
+            color: #eee;
+            font-family: 'Share Tech Mono', monospace;
+            padding: 40px;
+            background-image: url('https://wallpapercave.com/wp/wp4144809.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            backdrop-filter: blur(3px);
+        }
+
+        h1 {
+            font-family: 'DevilMayCrySSS', serif;
+            color: #ff003c;
+            text-shadow: 2px 2px 5px black;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 8px;
+            width: 300px;
+            margin-bottom: 20px;
+            border: 1px solid #444;
+            background-color: #222;
+            color: #fff;
+        }
+
+        table {
+            width: 90%;
+            border-collapse: collapse;
+            background-color: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 10px rgba(255, 0, 60, 0.7);
+        }
+
+        th, td {
+            padding: 15px;
+            border: 1px solid #444;
+            text-align: left;
+        }
+
+        th {
+            background-color: #222;
+            color: #ff003c;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        td {
+            font-size: 16px;
+        }
+
+        tr:hover {
+            background-color: rgba(255, 0, 60, 0.2);
+        }
+
+    </style>
+</head>
+<body>
+
+<h1>Devil May Cry Corp. - Employee Roster</h1>
+
+<label for="filterInput"></label><input type="text" id="filterInput" placeholder="Filter by name or position..." onkeyup="filterTable()">
+
+<table id="employeeTable">
+    <thead>
+    <tr>
+        <th onclick="sortTable(0)">ID ▲▼</th>
+        <th onclick="sortTable(1)">Name ▲▼</th>
+        <th onclick="sortTable(2)">Position ▲▼</th>
+        <th onclick="sortTable(3)">Salary ▲▼</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="emp : ${employees}">
+        <td th:text="${emp.id}">1</td>
+        <td th:text="${emp.name}">Dante</td>
+        <td th:text="${emp.position}">Demon Slayer</td>
+        <td th:text="${emp.salary}">66600</td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+    function sortTable(n) {
+        const table = document.getElementById("employeeTable");
+        let rows, switching = true, i, x, y, shouldSwitch, dir = "asc", switchcount = 0;
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[n];
+                y = rows[i + 1].getElementsByTagName("TD")[n];
+                let xVal = isNaN(x.innerHTML) ? x.innerHTML.toLowerCase() : parseFloat(x.innerHTML);
+                let yVal = isNaN(y.innerHTML) ? y.innerHTML.toLowerCase() : parseFloat(y.innerHTML);
+                if ((dir === "asc" && xVal > yVal) || (dir === "desc" && xVal < yVal)) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+            } else {
+                if (switchcount === 0 && dir === "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+
+    function filterTable() {
+        const input = document.getElementById("filterInput");
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById("employeeTable");
+        const tr = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < tr.length; i++) {
+            let visible = false;
+            const td = tr[i].getElementsByTagName("td");
+            for (let j = 0; j < td.length; j++) {
+                const txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    visible = true;
+                    break;
+                }
+            }
+            tr[i].style.display = visible ? "" : "none";
+        }
+    }
+</script>
+
+</body>
+</html>
